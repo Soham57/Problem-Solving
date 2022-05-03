@@ -1,0 +1,112 @@
+'use strict';
+
+const fs = require('fs');
+
+process.stdin.resume();
+process.stdin.setEncoding('utf-8');
+
+let inputString = '';
+let currentLine = 0;
+
+process.stdin.on('data', function(inputStdin) {
+    inputString += inputStdin;
+});
+
+process.stdin.on('end', function() {
+    inputString = inputString.split('\n');
+
+    main();
+});
+
+function readLine() {
+    return inputString[currentLine++];
+}
+
+/*
+ * Complete the 'countInversions' function below.
+ *
+ * The function is expected to return a LONG_INTEGER.
+ * The function accepts INTEGER_ARRAY arr as parameter.
+ */
+
+//function countInversions(arr) {
+    // Write your code here
+    // let swaps=0;
+    // for(let i=0; i<arr.length; i++){
+    //     let check=1;
+    //     for(let j=0; j<arr.length-1; j++){
+            
+    //         if(arr[j]>arr[j+1]){
+    //            let temp=arr[j];
+    //            arr[j]=arr[j+1];
+    //            arr[j+1]=temp;
+    //            swaps++;
+    //            check=0;
+    //         }
+    //     }
+    //     if(check===1){
+    //         break;
+    //     }
+    // }
+    
+//}
+
+    function countInversions(arr) {
+    let count = 0;
+    const mergeSort = (array) => {
+        if (array.length === 1) {
+            return array;
+        }
+        const length = array.length;
+        const middle = Math.floor(length / 2);
+        const left = array.slice(0, middle);
+        const right = array.slice(middle);
+
+        return merge(mergeSort(left), mergeSort(right));
+
+        function merge(left, right) {
+            let result = [];
+            let leftIndex = 0;
+            let rightIndex = 0;
+
+            while (leftIndex < left.length && rightIndex < right.length) {
+                if (left[leftIndex] < right[rightIndex]) {
+
+                    result.push(left[leftIndex]);
+                    leftIndex++;
+                } else if (left[leftIndex] > right[rightIndex]) {
+                    count = count + (left.length - leftIndex)
+                    result.push(right[rightIndex]);
+                    rightIndex++;
+                } else {
+                    result.push(left[leftIndex]);
+                    leftIndex++;
+                }
+            }
+
+            // Concat the remaining elements from one of the array
+            return result.concat(left.slice(leftIndex).concat(right.slice(rightIndex)));
+        }
+    };
+
+    mergeSort(arr);
+    return count;
+
+}
+function main() {
+    const ws = fs.createWriteStream(process.env.OUTPUT_PATH);
+
+    const t = parseInt(readLine().trim(), 10);
+
+    for (let tItr = 0; tItr < t; tItr++) {
+        const n = parseInt(readLine().trim(), 10);
+
+        const arr = readLine().replace(/\s+$/g, '').split(' ').map(arrTemp => parseInt(arrTemp, 10));
+
+        const result = countInversions(arr);
+
+        ws.write(result + '\n');
+    }
+
+    ws.end();
+}
